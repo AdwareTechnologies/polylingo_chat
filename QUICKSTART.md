@@ -7,7 +7,7 @@ Get real-time chat in 5 minutes! Translation is optional.
 ### 1. Add gems
 ```ruby
 # Gemfile
-gem 'polyglot', github: 'shoaibmalik786/polyglot'
+gem 'polyglot', github: 'AdwareTechnologies/polyglot'
 gem 'sidekiq'  # or 'solid_queue' or 'delayed_job_active_record'
 ```
 

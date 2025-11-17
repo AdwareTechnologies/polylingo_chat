@@ -39,7 +39,7 @@ Perfect for marketplaces, SaaS apps, CRMs, support systems, or global communitie
 ### 1. Add the gem
 ```ruby
 # Gemfile
-gem "polyglot", github: "shoaibmalik786/polyglot"
+gem "polyglot", github: "AdwareTechnologies/polyglot"
 
 # Add a background job processor
 gem 'sidekiq'  # or 'solid_queue' or 'delayed_job_active_record'
