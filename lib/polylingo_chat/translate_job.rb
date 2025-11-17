@@ -1,5 +1,5 @@
 module PolylingoChat
-  class TranslateJob < ActiveJob::Base
+  class TranslateJob < ApplicationJob
     queue_as :polylingo_chat_translations
 
     def perform(message_id)
@@ -52,12 +52,14 @@ module PolylingoChat
             translated: translation_enabled,
             recipient_id: recipient.id
           })
-        rescue => e
-          # ignore broadcast errors
+        rescue StandardError => e
+          Rails.logger.error("PolylingoChat: Broadcast failed - #{e.message}")
         end
       end
 
-      message.update(translated: translation_enabled) rescue nil
+      message.update(translated: translation_enabled)
+    rescue StandardError => e
+      Rails.logger.error("PolylingoChat: Failed to update message translation status - #{e.message}")
     end
   end
 end

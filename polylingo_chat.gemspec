@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'polylingo_chat'
-  s.version = '0.1.0'
+  s.version = '0.1.1'
   s.summary = 'Realtime chat with automatic AI translation for Ruby/Rails apps'
   s.authors = ['Shoaib Malik']
   s.email = ['shoaib2109@gmail.com']
@@ -10,10 +10,9 @@ Gem::Specification.new do |s|
   s.required_ruby_version = '>= 2.7.0'
 
 
-  s.add_runtime_dependency 'rails', '>= 6.0'
+  s.add_runtime_dependency 'rails', '>= 6.0', '< 9'
   s.add_runtime_dependency 'faraday', '~> 2.0'
   s.add_runtime_dependency 'concurrent-ruby', '~> 1.2'
-  s.add_runtime_dependency 'json'
 
   # Optional: Add one of these to your Gemfile based on your choice
   # s.add_development_dependency 'sidekiq', '~> 7.0'

@@ -31,7 +31,7 @@ module PolylingoChat
         empty_directory "app/channels/application_cable"
         template "channels/application_cable/channel.rb", "app/channels/application_cable/channel.rb"
         template "channels/application_cable/connection.rb", "app/channels/application_cable/connection.rb"
-        template "channels/polylingo_chat_chat_channel.rb", "app/channels/polylingo_chat_chat_channel.rb"
+        template "channels/polylingo_chat_channel.rb", "app/channels/polylingo_chat_channel.rb"
       end
 
       def create_javascript_files

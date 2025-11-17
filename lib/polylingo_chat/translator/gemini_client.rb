@@ -21,7 +21,7 @@ module PolylingoChat
           # caching
           cache_key = "polylingo_chat:#{Digest::SHA1.hexdigest([text, from, to, context].join(':'))}"
           if (cache = PolylingoChat.config.cache_store)
-            cached = cache.get(cache_key) rescue nil
+            cached = cache.get(cache_key) rescue StandardError; nil
             return JSON.parse(cached)['translated'] if cached
           end
 
@@ -31,7 +31,7 @@ module PolylingoChat
           if (cache = PolylingoChat.config.cache_store)
             begin
               cache.set(cache_key, { translated: translated }.to_json)
-            rescue => e
+            rescue StandardError => e
               # ignore cache failures
             end
           end
