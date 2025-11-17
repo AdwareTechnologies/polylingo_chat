@@ -1,11 +1,11 @@
 Gem::Specification.new do |s|
   s.name = 'polyglot'
-  s.version = '0.1.0'
+  s.version = '0.2.0'
   s.summary = 'Realtime chat with automatic AI translation for Ruby/Rails apps'
   s.authors = ['Shoaib Malik']
   s.email = ['shoaib2109@gmail.com']
   s.files = Dir['lib/**/*.rb'] + Dir['lib/**/*'] + Dir['templates/**/*'] + ['README.md']
-  s.homepage = 'https://github.com/shoaibmalik786/polyglot'
+  s.homepage = 'https://github.com/AdwareTechnologies/polyglot'
   s.license = 'MIT'
   s.required_ruby_version = '>= 2.7.0'
 
