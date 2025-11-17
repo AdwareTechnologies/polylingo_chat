@@ -9,16 +9,16 @@ require 'bundler/setup'
 require 'active_support'
 require 'active_support/core_ext'
 
-# Load polyglot components individually to avoid Rails engine loading issues
-require_relative '../lib/polyglot/version'
-require_relative '../lib/polyglot/config'
-require_relative '../lib/polyglot/translator/base'
-require_relative '../lib/polyglot/translator/openai_client'
-require_relative '../lib/polyglot/translator/anthropic_client'
-require_relative '../lib/polyglot/translator/gemini_client'
+# Load polylingo_chat components individually to avoid Rails engine loading issues
+require_relative '../lib/polylingo_chat/version'
+require_relative '../lib/polylingo_chat/config'
+require_relative '../lib/polylingo_chat/translator/base'
+require_relative '../lib/polylingo_chat/translator/openai_client'
+require_relative '../lib/polylingo_chat/translator/anthropic_client'
+require_relative '../lib/polylingo_chat/translator/gemini_client'
 
-# Initialize Polyglot module if not already defined
-module Polyglot
+# Initialize PolylingoChat module if not already defined
+module PolylingoChat
   class Error < StandardError; end
 
   def self.configure
@@ -33,7 +33,7 @@ module Polyglot
 end
 
 # Load translator module
-module Polyglot
+module PolylingoChat
   module Translator
     class << self
       def detect_language(text)
@@ -49,15 +49,15 @@ module Polyglot
       end
 
       def configure_provider
-        case Polyglot.config.provider
+        case PolylingoChat.config.provider
         when :openai
-          Polyglot::Translator::OpenAIClient
+          PolylingoChat::Translator::OpenAIClient
         when :anthropic
-          Polyglot::Translator::AnthropicClient
+          PolylingoChat::Translator::AnthropicClient
         when :gemini
-          Polyglot::Translator::GeminiClient
+          PolylingoChat::Translator::GeminiClient
         else
-          Polyglot::Translator::OpenAIClient
+          PolylingoChat::Translator::OpenAIClient
         end
       end
 
@@ -99,7 +99,7 @@ RSpec.configure do |config|
 
   # Reset provider before each test
   config.before(:each) do
-    Polyglot.instance_variable_set(:@config, nil)
-    Polyglot::Translator.reset_provider!
+    PolylingoChat.instance_variable_set(:@config, nil)
+    PolylingoChat::Translator.reset_provider!
   end
 end

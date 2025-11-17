@@ -1,4 +1,4 @@
-# Polyglot Quick Start Guide
+# PolylingoChat Quick Start Guide
 
 Get real-time chat in 5 minutes! Translation is optional.
 
@@ -7,20 +7,20 @@ Get real-time chat in 5 minutes! Translation is optional.
 ### 1. Add gems
 ```ruby
 # Gemfile
-gem 'polyglot', github: 'AdwareTechnologies/polyglot'
+gem 'polylingo_chat', github: 'AdwareTechnologies/polylingo_chat'
 gem 'sidekiq'  # or 'solid_queue' or 'delayed_job_active_record'
 ```
 
 ### 2. Install
 ```bash
 bundle install
-bin/rails generate polyglot:install
+bin/rails generate polylingo_chat:install
 bin/rails db:migrate
 ```
 
 **The installer automatically creates:**
 - Models (Conversation, Participant, Message)
-- ActionCable channels (PolyglotChatChannel)
+- ActionCable channels (PolylinguoChatChannel)
 - JavaScript files for real-time chat
 - Routes, importmap, and configuration
 - Solid Cable setup (database-backed WebSockets)
@@ -31,13 +31,13 @@ bin/rails db:migrate
 config.active_job.queue_adapter = :sidekiq
 ```
 
-### 4. Configure Polyglot
+### 4. Configure PolylingoChat
 
-Edit `config/initializers/polyglot.rb` (created by installer):
+Edit `config/initializers/polylingo_chat.rb` (created by installer):
 
 **For chat-only (no translation):**
 ```ruby
-Polyglot.configure do |config|
+PolylingoChat.configure do |config|
   config.api_key = nil  # No translation
   config.queue_adapter = :sidekiq
   config.async = true
@@ -46,7 +46,7 @@ end
 
 **For chat with translation:**
 ```ruby
-Polyglot.configure do |config|
+PolylingoChat.configure do |config|
   config.provider = :openai
   config.api_key = ENV['OPENAI_API_KEY']
   config.model = 'gpt-4o-mini'
