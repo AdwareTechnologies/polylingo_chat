@@ -1,4 +1,4 @@
-class PolylinguoChatChannel < ApplicationCable::Channel
+class PolylingoChatChannel < ApplicationCable::Channel
   def subscribed
     conversation_id = params[:conversation_id]
 

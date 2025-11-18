@@ -1,0 +1,141 @@
+<div class="polylingo-conversation-show">
+  <h1><%= @conversation.title || "Conversation ##{@conversation.id}" %></h1>
+
+  <div class="conversation-info">
+    <p>
+      <strong>Participants:</strong>
+      <%= @conversation.participantables.map { |p| p.try(:name) || p.try(:email) }.join(', ') %>
+    </p>
+  </div>
+
+  <div id="messages" class="messages-container">
+    <% @messages_with_translations.each do |message| %>
+      <div class="message <%= message.sender == current_user ? 'sent' : 'received' %>" data-message-id="<%= message.id %>">
+        <div class="message-sender"><%= message.sender_name %></div>
+        <div class="message-body"><%= message.display_body %></div>
+        <div class="message-time"><%= time_ago_in_words(message.created_at) %> ago</div>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Message input form -->
+  <div class="message-form">
+    <%= form_with url: conversation_messages_path(@conversation), method: :post, local: true, class: "new-message-form" do |f| %>
+      <div class="form-group">
+        <%= text_area_tag "message[body]", nil, placeholder: "Type your message...", class: "message-input", rows: 3 %>
+        <%= hidden_field_tag :sender_type, current_user.class.name %>
+        <%= hidden_field_tag :sender_id, current_user.id %>
+      </div>
+      <%= f.submit "Send", class: "btn-send" %>
+    <% end %>
+  </div>
+
+  <p>
+    <%= link_to "← Back to Conversations", conversations_path, class: "btn-back" %>
+  </p>
+</div>
+
+<script>
+  // Set up for real-time chat via ActionCable
+  window.conversationId = <%= @conversation.id %>;
+  window.currentUserId = <%= current_user&.id || 'null' %>;
+</script>
+
+<style>
+  .polylingo-conversation-show {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .conversation-info {
+    padding: 10px;
+    background: #f0f0f0;
+    border-radius: 5px;
+    margin-bottom: 20px;
+  }
+
+  .messages-container {
+    min-height: 400px;
+    max-height: 600px;
+    overflow-y: auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+    margin-bottom: 20px;
+  }
+
+  .message {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    max-width: 70%;
+  }
+
+  .message.sent {
+    margin-left: auto;
+    background: #007bff;
+    color: white;
+    text-align: right;
+  }
+
+  .message.received {
+    background: #f1f1f1;
+    color: #333;
+  }
+
+  .message-sender {
+    font-weight: bold;
+    font-size: 0.9em;
+    margin-bottom: 5px;
+  }
+
+  .message-body {
+    margin-bottom: 5px;
+  }
+
+  .message-time {
+    font-size: 0.8em;
+    opacity: 0.7;
+  }
+
+  .message-form {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+
+  .message-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    font-family: inherit;
+    resize: vertical;
+  }
+
+  .btn-send {
+    background: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .btn-send:hover {
+    background: #0056b3;
+  }
+
+  .btn-back {
+    color: #007bff;
+    text-decoration: none;
+  }
+
+  .btn-back:hover {
+    text-decoration: underline;
+  }
+</style>

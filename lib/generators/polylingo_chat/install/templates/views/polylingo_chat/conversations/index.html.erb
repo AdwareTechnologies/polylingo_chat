@@ -1,0 +1,56 @@
+<div class="polylingo-conversations">
+  <h1>Conversations</h1>
+
+  <div class="conversations-list">
+    <%% if @conversations.any? %>
+      <%% @conversations.each do |conversation| %>
+        <div class="conversation-item">
+          <h3><%%= link_to conversation.title || "Conversation ##{conversation.id}", polylingo_chat_conversation_path(conversation) %></h3>
+          <p>
+            <strong>Participants:</strong>
+            <%%= conversation.participantables.map { |p| p.try(:name) || p.try(:email) }.join(', ') %>
+          </p>
+          <p>
+            <strong>Messages:</strong> <%%= conversation.messages.count %>
+          </p>
+          <small>Created <%%= time_ago_in_words(conversation.created_at) %> ago</small>
+        </div>
+      <%% end %>
+    <%% else %>
+      <p>No conversations yet.</p>
+    <%% end %>
+  </div>
+</div>
+
+<style>
+  .polylingo-conversations {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .conversations-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .conversation-item {
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #f9f9f9;
+  }
+
+  .conversation-item h3 {
+    margin: 0 0 10px 0;
+  }
+
+  .conversation-item p {
+    margin: 5px 0;
+  }
+
+  .conversation-item small {
+    color: #666;
+  }
+</style>

@@ -1,0 +1,72 @@
+===============================================================================
+
+PolylingoChat has been installed successfully!
+
+Models, Controllers, Views, and Jobs are provided by the gem (like Devise).
+They are located in the gem's app/ directory and can be overridden by creating
+files with the same path in your application's app/ directory.
+
+Next steps:
+
+1. Run migrations:
+   rails db:migrate
+
+2. Ensure your User model has a `preferred_language` column (optional):
+   rails g migration AddPreferredLanguageToUsers preferred_language:string
+   rails db:migrate
+
+3. Configure your AI provider in config/initializers/polylingo_chat.rb:
+   - Set config.api_key with your API key
+   - Choose your provider (:openai, :anthropic, or :gemini)
+   - Or leave api_key as nil for chat-only mode (no translation)
+
+4. Set up Solid Cable for production:
+   - Already configured for development
+   - For production, ensure database is configured in config/cable.yml
+
+5. For ActionCable/real-time chat (full-stack apps):
+   # Already set up automatically during installation
+   # JavaScript files and channels are configured
+
+6. Add this to your User model:
+   # app/models/user.rb
+   class User < ApplicationRecord
+     # Optional: for chat functionality
+     has_many :polylingo_chat_participants,
+              class_name: "PolylingoChat::Participant",
+              as: :participantable,
+              dependent: :destroy
+     has_many :polylingo_chat_conversations,
+              through: :polylingo_chat_participants,
+              source: :conversation
+     has_many :polylingo_chat_messages,
+              class_name: "PolylingoChat::Message",
+              as: :sender,
+              dependent: :destroy
+   end
+
+7. To customize models, controllers, or views, create files in your app:
+   # app/models/polylingo_chat/conversation.rb
+   module PolylingoChat
+     class Conversation < ApplicationRecord
+       # Your custom code here - this will override the gem's version
+     end
+   end
+
+   # app/controllers/polylingo_chat/conversations_controller.rb
+   module PolylingoChat
+     class ConversationsController < ApplicationController
+       # Your custom code here - this will override the gem's version
+     end
+   end
+
+8. Visit your conversations:
+   - HTML: http://localhost:3000/polylingo_chat/conversations
+   - JSON API: http://localhost:3000/polylingo_chat/conversations.json
+
+For frontend integration (React, Next.js, Vue, Angular):
+   See: FRONTEND_INTEGRATION.md in the gem's directory
+
+For more information, visit: https://github.com/AdwareTechnologies/polylingo_chat
+
+===============================================================================

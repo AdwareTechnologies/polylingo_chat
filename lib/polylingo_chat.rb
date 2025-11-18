@@ -3,7 +3,6 @@ require 'polylingo_chat/engine'
 require 'polylingo_chat/config'
 require 'polylingo_chat/railtie'
 require 'polylingo_chat/translator'
-require 'polylingo_chat/translate_job'
 require 'polylingo_chat/realtime'
 
 module PolylingoChat
