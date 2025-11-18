@@ -1,6 +1,8 @@
+require_relative 'lib/polylingo_chat/version'
+
 Gem::Specification.new do |s|
   s.name = 'polylingo_chat'
-  s.version = '0.3.0'
+  s.version = PolylingoChat::VERSION
   s.summary = 'Realtime chat with automatic AI translation for Ruby/Rails apps - supports API-only mode and polymorphic associations'
   s.authors = ['Shoaib Malik']
   s.email = ['shoaib2109@gmail.com']
