@@ -32,5 +32,15 @@ module PolylingoChat
         p.role = role if role
       end
     end
+
+    # Get count of unread messages for a specific reader
+    def unread_messages_count_for(reader)
+      messages.unread_by(reader).where.not(sender: reader).count
+    end
+
+    # Check if conversation has unread messages for a specific reader
+    def has_unread_messages_for?(reader)
+      unread_messages_count_for(reader) > 0
+    end
   end
 end

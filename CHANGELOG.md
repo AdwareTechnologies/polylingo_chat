@@ -7,6 +7,77 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2025-01-18
+
+### Added - MESSAGE READ RECEIPTS 📬
+- **Per-Participant Read/Unread Tracking**: Messages now track read status independently for each participant
+  - New `PolylingoChat::MessageReadReceipt` model with polymorphic `reader` association
+  - New `polylingo_chat_message_read_receipts` table with unique index on `[message_id, reader_type, reader_id]`
+  - Supports any polymorphic reader type (User, Customer, Vendor, etc.)
+
+- **Message Model Enhancements**:
+  - `message.mark_as_read_by(reader)` - Mark message as read by specific reader
+  - `message.read_by?(reader)` - Check if message has been read
+  - `message.unread_by?(reader)` - Check if message is unread
+  - `message.read_at_by(reader)` - Get timestamp when message was read
+  - `message.readers` - Get all readers who have read the message
+  - `Message.unread_by(reader)` - Scope to query unread messages
+  - `Message.read_by(reader)` - Scope to query read messages
+
+- **Conversation Model Enhancements**:
+  - `conversation.unread_messages_count_for(reader)` - Count unread messages for a reader
+  - `conversation.has_unread_messages_for?(reader)` - Check if conversation has unread messages
+
+- **Automatic Read Tracking**:
+  - Messages automatically marked as read when viewing conversations
+  - Messages automatically marked as read when fetching via API
+  - Own messages are never marked as read (only messages from other participants)
+
+- **API Endpoints for Read Receipts**:
+  - `POST /conversations/:conversation_id/messages/:id/mark_as_read` - Mark individual message as read
+  - `POST /conversations/:id/mark_all_read` - Mark all messages in conversation as read
+  - `GET /conversations/:id/unread_count` - Get unread count without marking as read
+  - All message JSON responses now include `read` (boolean) and `read_at` (datetime) fields
+  - All conversation JSON responses now include `unread_count` field
+
+- **UI Enhancements**:
+  - Read receipts (✓✓) displayed on sent messages that have been read
+  - Single checkmark (✓) on sent but unread messages
+  - Unread message count badges on conversation list
+  - Visual indicators for conversations with unread messages (blue left border, special background)
+  - Color-coded read indicators (green for read, faded for unread)
+
+- **Generator for Existing Installations**:
+  - `rails generate polylingo_chat:read_receipts` - Add read receipts to existing installations
+  - Comprehensive upgrade instructions with available features
+
+- **Complete API Documentation**:
+  - New `API_READ_RECEIPTS.md` with full endpoint specifications
+  - JavaScript usage examples for API-only apps
+  - Ruby API method documentation
+  - Best practices for read receipt implementation
+
+### Changed
+- Updated install generator to include `create_message_read_receipts.rb` migration
+- Enhanced `ConversationsController` to automatically mark messages as read on view
+- Enhanced `MessagesController` to automatically mark messages as read when fetching
+- Updated conversation list view to show unread counts and visual indicators
+- Updated conversation show view to display read receipt indicators
+- Modified JSON serializers to include read status information
+
+### Performance & Scalability
+- Efficient database queries with proper indexing on read receipts table
+- Unique constraint prevents duplicate read receipts
+- Optimized unread count queries using scopes and left joins
+- Polymorphic associations support any participant type without schema changes
+
+### API-Only Application Support
+- Full REST API for read receipt management
+- Automatic read tracking on GET requests
+- Manual read tracking via POST endpoints
+- Unread counts included in all conversation responses
+- Works seamlessly with mobile apps, SPAs, and API-only architectures
+
 ## [0.4.1] - 2025-01-18
 
 ### Fixed

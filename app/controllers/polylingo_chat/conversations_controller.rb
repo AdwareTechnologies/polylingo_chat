@@ -1,6 +1,6 @@
 module PolylingoChat
   class ConversationsController < PolylingoChat::ApplicationController
-    before_action :set_conversation, only: [:show, :update, :destroy]
+    before_action :set_conversation, only: [:show, :update, :destroy, :mark_all_read, :unread_count]
 
     # GET /polylingo_chat/conversations
     def index
@@ -19,10 +19,15 @@ module PolylingoChat
         format.html do
           # Translate messages for current user's preferred language
           @messages_with_translations = translate_messages_for_user(@conversation.messages.order(created_at: :asc))
+          # Mark messages as read by current user
+          mark_messages_as_read(@messages_with_translations)
         end
         format.json do
           # Support language query parameter for API consumers
           target_language = params[:lang]
+          messages = @conversation.messages.order(created_at: :asc)
+          # Mark messages as read by current user
+          mark_messages_as_read(messages)
           render json: conversation_json(@conversation, include_messages: true, target_language: target_language)
         end
       end
@@ -75,6 +80,47 @@ module PolylingoChat
       end
     end
 
+    # POST /polylingo_chat/conversations/:id/mark_all_read
+    # API endpoint to mark all messages in a conversation as read
+    def mark_all_read
+      unless current_user
+        render json: { error: 'Authentication required' }, status: :unauthorized
+        return
+      end
+
+      messages = @conversation.messages.where.not(sender: current_user)
+      marked_count = 0
+
+      messages.each do |message|
+        unless message.read_by?(current_user)
+          message.mark_as_read_by(current_user)
+          marked_count += 1
+        end
+      end
+
+      render json: {
+        message: 'All messages marked as read',
+        conversation_id: @conversation.id,
+        marked_count: marked_count
+      }, status: :ok
+    end
+
+    # GET /polylingo_chat/conversations/:id/unread_count
+    # API endpoint to get unread message count for current user
+    def unread_count
+      unless current_user
+        render json: { error: 'Authentication required' }, status: :unauthorized
+        return
+      end
+
+      count = @conversation.unread_messages_count_for(current_user)
+
+      render json: {
+        conversation_id: @conversation.id,
+        unread_count: count
+      }, status: :ok
+    end
+
     private
 
     def set_conversation
@@ -98,7 +144,7 @@ module PolylingoChat
     end
 
     def conversation_json(conversation, include_messages: false, target_language: nil)
-      {
+      json = {
         id: conversation.id,
         title: conversation.title,
         created_at: conversation.created_at,
@@ -106,6 +152,13 @@ module PolylingoChat
         participants: conversation.participants.map { |p| participant_json(p) },
         messages: include_messages ? conversation.messages.map { |m| message_json(m, target_language: target_language) } : []
       }
+
+      # Add unread count for current user
+      if current_user
+        json[:unread_count] = conversation.unread_messages_count_for(current_user)
+      end
+
+      json
     end
 
     def participant_json(participant)
@@ -155,7 +208,24 @@ module PolylingoChat
         { language: t.language, text: t.translated_text }
       end
 
+      # Add read status for current user
+      if current_user
+        json[:read] = message.read_by?(current_user)
+        json[:read_at] = message.read_at_by(current_user)
+      end
+
       json
+    end
+
+    def mark_messages_as_read(messages)
+      return unless current_user
+
+      messages.each do |message|
+        # Don't mark own messages as read
+        next if message.sender == current_user
+        # Mark as read if not already read
+        message.mark_as_read_by(current_user) unless message.read_by?(current_user)
+      end
     end
   end
 end

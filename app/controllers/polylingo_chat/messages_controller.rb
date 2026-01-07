@@ -1,12 +1,15 @@
 module PolylingoChat
   class MessagesController < PolylingoChat::ApplicationController
     before_action :set_conversation
+    before_action :set_message, only: [:mark_as_read]
 
     # GET /polylingo_chat/conversations/:conversation_id/messages
     # Optional query params:
     #   - lang: ISO 639-1 code (e.g., 'es', 'fr', 'de') - uses cached translations
     def index
       @messages = @conversation.messages.order(created_at: :asc)
+      # Mark messages as read by current user
+      mark_messages_as_read(@messages) if current_user
 
       respond_to do |format|
         format.html # renders app/views/polylingo_chat/messages/index.html.erb
@@ -16,6 +19,29 @@ module PolylingoChat
           render json: @messages.map { |m| message_json(m, target_language: target_language) }
         end
       end
+    end
+
+    # POST /polylingo_chat/conversations/:conversation_id/messages/:id/mark_as_read
+    # API endpoint to explicitly mark a message as read
+    def mark_as_read
+      unless current_user
+        render json: { error: 'Authentication required' }, status: :unauthorized
+        return
+      end
+
+      # Don't allow marking own messages as read
+      if @message.sender == current_user
+        render json: { error: 'Cannot mark your own message as read' }, status: :unprocessable_entity
+        return
+      end
+
+      receipt = @message.mark_as_read_by(current_user)
+
+      render json: {
+        message: 'Message marked as read',
+        read_at: receipt.read_at,
+        message_id: @message.id
+      }, status: :ok
     end
 
     # POST /polylingo_chat/conversations/:conversation_id/messages
@@ -55,6 +81,10 @@ module PolylingoChat
       @conversation = Conversation.find(params[:conversation_id])
     end
 
+    def set_message
+      @message = @conversation.messages.find(params[:id])
+    end
+
     def message_params
       params.require(:message).permit(:body, :language)
     end
@@ -85,7 +115,24 @@ module PolylingoChat
         { language: t.language, text: t.translated_text }
       end
 
+      # Add read status for current user
+      if current_user
+        json[:read] = message.read_by?(current_user)
+        json[:read_at] = message.read_at_by(current_user)
+      end
+
       json
+    end
+
+    def mark_messages_as_read(messages)
+      return unless current_user
+
+      messages.each do |message|
+        # Don't mark own messages as read
+        next if message.sender == current_user
+        # Mark as read if not already read
+        message.mark_as_read_by(current_user) unless message.read_by?(current_user)
+      end
     end
 
   end

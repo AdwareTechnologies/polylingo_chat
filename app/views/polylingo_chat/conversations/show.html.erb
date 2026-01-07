@@ -13,7 +13,16 @@
       <div class="message <%= message.sender == current_user ? 'sent' : 'received' %>" data-message-id="<%= message.id %>">
         <div class="message-sender"><%= message.sender_name %></div>
         <div class="message-body"><%= message.display_body %></div>
-        <div class="message-time"><%= time_ago_in_words(message.created_at) %> ago</div>
+        <div class="message-time">
+          <%= time_ago_in_words(message.created_at) %> ago
+          <% if message.sender == current_user %>
+            <% if message.read_receipts.where.not(reader: current_user).any? %>
+              <span class="read-indicator read" title="Read">✓✓</span>
+            <% else %>
+              <span class="read-indicator unread" title="Sent">✓</span>
+            <% end %>
+          <% end %>
+        </div>
       </div>
     <% end %>
   </div>
@@ -98,6 +107,27 @@
   .message-time {
     font-size: 0.8em;
     opacity: 0.7;
+  }
+
+  .read-indicator {
+    margin-left: 5px;
+    font-weight: bold;
+  }
+
+  .read-indicator.read {
+    color: #4CAF50;
+  }
+
+  .read-indicator.unread {
+    opacity: 0.5;
+  }
+
+  .message.sent .read-indicator {
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .message.sent .read-indicator.read {
+    color: #90EE90;
   }
 
   .message-form {

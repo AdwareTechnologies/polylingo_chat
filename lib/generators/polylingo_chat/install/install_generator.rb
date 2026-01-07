@@ -28,6 +28,7 @@ module PolylingoChat
         migration_template "create_participants.rb", "db/migrate/create_polylingo_chat_participants.rb"
         migration_template "create_messages.rb", "db/migrate/create_polylingo_chat_messages.rb"
         migration_template "create_message_translations.rb", "db/migrate/create_polylingo_chat_message_translations.rb"
+        migration_template "create_message_read_receipts.rb", "db/migrate/create_polylingo_chat_message_read_receipts.rb"
       end
 
       def create_channels

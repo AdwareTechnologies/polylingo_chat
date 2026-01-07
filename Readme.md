@@ -15,6 +15,7 @@ Perfect for marketplaces, SaaS apps, CRMs, support systems, or global communitie
 - 🧩 **Rails Engine** — mounts directly inside your app
 - 📱 **API-only mode** — works with Rails API applications (auto-detected)
 - 👥 **Polymorphic associations** — supports multiple participant types (User, Vendor, Customer, etc.)
+- 📬 **Read receipts** — per-participant read/unread tracking with visual indicators (✓ sent, ✓✓ read)
 - 🔌 **Works with any ActiveJob backend** (Sidekiq, Solid Queue, Delayed Job, etc.)
 - 🔐 **Secure & scoped** ActionCable channels
 - 🧱 **Extendable architecture** (custom UI, custom providers, custom storage)
@@ -148,6 +149,51 @@ The JavaScript consumer automatically passes `window.currentUserId` to authentic
 ```bash
 bundle exec sidekiq  # or bin/rails solid_queue:start, or bin/rails jobs:work
 ```
+
+---
+
+## 🔄 Upgrading Existing Installations
+
+### Adding Read Receipts to Existing Installations
+
+If you're upgrading from a previous version and want to add message read receipts:
+
+```bash
+bin/rails generate polylingo_chat:read_receipts
+bin/rails db:migrate
+```
+
+This adds:
+- ✅ `polylingo_chat_message_read_receipts` table migration
+- ✅ Per-participant read/unread message tracking
+- ✅ Read receipt indicators in UI (✓ sent, ✓✓ read)
+- ✅ Unread message counts on conversation list
+- ✅ API endpoints for read receipt management
+- ✅ Automatic read tracking when viewing messages
+
+**New API Methods:**
+```ruby
+# Message methods
+message.mark_as_read_by(user)
+message.read_by?(user)
+message.unread_by?(user)
+message.read_at_by(user)
+
+# Conversation methods
+conversation.unread_messages_count_for(user)
+conversation.has_unread_messages_for?(user)
+
+# Query scopes
+Message.unread_by(user)
+Message.read_by(user)
+```
+
+**New API Endpoints:**
+- `POST /conversations/:conversation_id/messages/:id/mark_as_read` - Mark individual message as read
+- `POST /conversations/:id/mark_all_read` - Mark all messages as read
+- `GET /conversations/:id/unread_count` - Get unread count
+
+See `API_READ_RECEIPTS.md` for complete API documentation.
 
 ---
 

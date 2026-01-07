@@ -4,8 +4,14 @@
   <div class="conversations-list">
     <% if @conversations.any? %>
       <% @conversations.each do |conversation| %>
-        <div class="conversation-item">
-          <h3><%= link_to conversation.title || "Conversation ##{conversation.id}", conversation_path(conversation) %></h3>
+        <% unread_count = current_user ? conversation.unread_messages_count_for(current_user) : 0 %>
+        <div class="conversation-item <%= 'has-unread' if unread_count > 0 %>">
+          <h3>
+            <%= link_to conversation.title || "Conversation ##{conversation.id}", conversation_path(conversation) %>
+            <% if unread_count > 0 %>
+              <span class="unread-badge"><%= unread_count %></span>
+            <% end %>
+          </h3>
           <p>
             <strong>Participants:</strong>
             <%= conversation.participantables.map { |p| p.try(:name) || p.try(:email) }.join(', ') %>
@@ -40,10 +46,19 @@
     border: 1px solid #ddd;
     border-radius: 8px;
     background: #f9f9f9;
+    position: relative;
+  }
+
+  .conversation-item.has-unread {
+    border-left: 4px solid #007bff;
+    background: #f0f8ff;
   }
 
   .conversation-item h3 {
     margin: 0 0 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
 
   .conversation-item p {
@@ -52,5 +67,17 @@
 
   .conversation-item small {
     color: #666;
+  }
+
+  .unread-badge {
+    display: inline-block;
+    background: #007bff;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    font-weight: bold;
+    min-width: 20px;
+    text-align: center;
   }
 </style>
